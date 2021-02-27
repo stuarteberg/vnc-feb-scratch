@@ -1,0 +1,83 @@
+workflow-name: copysegmentation
+cluster-type: lsf
+
+# resource-manager:
+#   server: ''
+#   port: 0
+#   config:
+#     read_reqs: 96
+#     read_data: 200000000
+#     write_reqs: 96
+#     write_data: 150000000
+
+exit-email:
+  send: true
+  include-log: false
+
+input:
+  tensorstore:
+    spec:
+      driver: neuroglancer_precomputed
+      kvstore:
+        driver: gcs
+        bucket: vnc-v3-seg-3d2f1c08fd4720848061f77362dc6c17
+      path: mask
+      recheck_cached_metadata: false
+      recheck_cached_data: false
+    context:
+      cache_pool:
+        total_bytes_limit: 0
+      data_copy_concurrency:
+        limit: 1
+      file_io_concurrency:
+        limit: 1
+    reinitialize-via: unpickle
+
+  geometry:
+    bounding-box: [[-1, -1, -1], [-1, -1, -1]]
+    message-block-shape: [1024, 256, 256]
+    block-width: 64
+    available-scales: [0,1,2,3,4,5,6]
+
+output:
+  zarr:
+    path: /nrs/flyem/vnc/vnc-v3-masks-16nm.zarr
+    dataset: s0
+    store-type: NestedDirectoryStore
+    global-offset: [0, 0, 0]
+    out-of-bounds-access: permit-empty
+    writable: true
+    create-if-necessary: true
+    creation-settings:
+      shape: [-1, -1, -1]
+      dtype: uint8
+      chunk-shape: [256, 256, 256]
+      max-scale: 6
+      compression: blosc-zstd
+
+  geometry:
+    bounding-box: [[-1, -1, -1], [-1, -1, -1]]
+    message-block-shape: [-1, -1, -1]
+    block-width: -1
+    available-scales: [0,1,2,3,4,5,6]
+
+copysegmentation:
+  sparse-block-mask: vnc_mask_s6_d4_downsample_2_sbm.pkl
+
+  slab-depth: 256
+  pyramid-depth: 6
+
+  download-pre-downsampled: false
+  downsample-method: subsample
+
+  compute-block-statistics: false
+  permit-inconsistent-pyramid: false
+  skip-scale-0-write: false
+  brick-compression: lz4_2x
+  write-empty-blocks: false
+  dont-overwrite-identical-blocks: false
+  delay-minutes-between-slabs: 0
+  input-mask-labels: []
+  output-mask-labels: []
+  skip-masking-step: false
+  add-offset-to-ids: 0

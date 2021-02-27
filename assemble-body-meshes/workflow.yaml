@@ -1,0 +1,32 @@
+workflow-name: decimatemeshes
+cluster-type: lsf
+
+resource-manager:
+  server: driver
+  port: 5000
+  config:
+    read_reqs: 128
+    read_data: 1e12
+    write_reqs: 96
+    write_data: 1e12
+
+exit-email:
+  send: true
+  include-log: true
+
+input:
+  dvid:
+    server: emdata5.janelia.org:8400
+    uuid: 'cd304d77a62c481484beb1f60803cb38'
+    tarsupervoxels-instance: segmentation_sv_meshes
+
+decimatemeshes:
+  #bodies: large-and-mutated-cd304d.csv
+  bodies: [12213, 16469, 19780, 28060, 29516, 36038, 48567, 26900716900]
+  format: ngmesh
+  decimation: 1.0
+  max-vertices: 200e3
+  rescale: [8.0, 8.0, 8.0]  # rescale for ngmesh (nanometers)
+  
+  skip-existing: true
+  output-directory: ../assemble-body-meshes-20210217.105319/ngmeshes

@@ -1,0 +1,60 @@
+workflow-name: createmeshes
+cluster-type: lsf
+
+# resource-manager:
+#   server: 'driver'
+#   port: 5000
+#   config:
+#     read_reqs: 128
+#     read_data: 2e15
+#     write_reqs: 64
+#     write_data: 2e15
+
+exit-email:
+  send: true
+
+input:
+  dvid:
+    server: emdata4:8460  # new server
+    uuid: 'cd304d77a62c481484beb1f60803cb38'  # new uuid
+    segmentation-name: segmentation
+    supervoxels: true
+    use-resource-manager-for-sparse-coords: false
+
+  geometry:
+    bounding-box: [[-1, -1, -1], [-1, -1, -1]]
+    message-block-shape: [512, 512, 512]
+    block-width: 64
+    available-scales: [0,1,2,3,4,5,6,7]
+
+  adapters:
+    rescale-level: 2
+
+output:
+  tarsupervoxels:
+    instance: segmentation_sv_meshes
+    sync-to: segmentation
+    create-if-necessary: true
+
+createmeshes:
+  subset-batch-size: 20000
+  subset-bodies: mutated-bodies-cd304d-BATCH-1.csv
+  shuffle-label-order: true
+  max-svs-per-brick: 1_000_000 # unlimited
+
+  halo: 4
+  pre-stitch-parameters:
+    smoothing: 2
+    decimation: 0.4
+    max-vertices: 0
+    compute-normals: false
+
+  stitch-method: simple-concatenate
+  rescale-before-write: 4.0
+  format: drc
+  skip-existing: true
+
+  ##
+  ## TINY SUPERVOXELS WILL BE GIVEN EMPTY MESHES
+  ##
+  include-empty: true

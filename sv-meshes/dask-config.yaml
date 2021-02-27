@@ -1,0 +1,30 @@
+jobqueue:
+  lsf:
+    processes: 15
+    cores: 15
+    ncpus: 16
+    memory: 240GB   # 15 GB per slot
+    walltime: 48:00
+
+    mem: 0
+    use-stdin: true
+    log-directory: job-logs
+    local-directory: ''
+    death-timeout: 60
+    name: dask-worker
+
+distributed:
+  scheduler:
+    work-stealing: true
+  
+  # comm:
+  #   timeouts:
+  #     connect: 30s
+  #     tcp: 60s
+
+  worker:
+    memory:
+      target: 0.0
+      spill: 0.0
+      pause: 0.0
+      terminate: 0.0

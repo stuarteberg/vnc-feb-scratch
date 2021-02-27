@@ -1,0 +1,43 @@
+workflow-name: labelmapcopy
+cluster-type: lsf
+
+exit-email:
+  send: true
+  include-log: false
+
+input:
+  dvid:
+    server: emdata4:8450
+    uuid: 75d3ddd2e9e143a38fa9cc9e7d55b3d1
+    segmentation-name: segmentation
+    supervoxels: true
+
+  geometry:
+    bounding-box: [[-1, -1, -1], [-1, -1, -1]]
+    message-block-shape: [-1, -1, -1]
+    block-width: -1
+    available-scales: [0,1,2,3,4,5,6,7]
+
+output:
+  dvid:
+    server: 'emdata4:8460'
+    uuid: '1ec355123bf94e588557a4568d26d258'
+    segmentation-name: segmentation
+    supervoxels: true
+    create-if-necessary: true
+    write-empty-blocks: false
+    disable-indexing: true
+
+  geometry:
+    bounding-box: [[-1, -1, -1], [-1, -1, -1]]
+    message-block-shape: [-1, -1, -1]
+    block-width: -1
+    available-scales: [0]
+
+labelmapcopy:
+  min-scale: 0
+  max-scale: 7
+  slab-shape: [42944, 56064, 64]
+  record-label-sets: false
+  record-only: false
+  dont-overwrite-identical-blocks: false
